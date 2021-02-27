@@ -1,0 +1,5 @@
+Basis data, Ilmu silat.
+Ilmu kebatinan, Basis data, Strategi algoritma.
+Ilmu silat.
+Strategi algoritma, Basis data, Ilmu silat.
+Pemrograman Berorientasi Objek, Ilmu kebatinan, Strategi algoritma.
