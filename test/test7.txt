@@ -1,0 +1,6 @@
+Algoritma Struktur Data.
+Basis Data, Algoritma Struktur Data.
+Strategi Algoritma, Algoritma Struktur Data.
+Matematika Diskrit, Strategi Algoritma.
+RPL, Strategi Algoritma, Basis Data.
+TBFO, RPL, Matematika Diskrit.
