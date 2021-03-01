@@ -47,7 +47,7 @@ class py_solution:
         return roman_num
 
 
-# mengembalikan array key yang merupakan simpul dengan derajat = 0
+# mengembalikan array key yang merupakan simpul dengan derajat masuk = 0
 def noIndegree(graph):
     no = []
     N = len(graph.adjList)
@@ -61,15 +61,16 @@ def noIndegree(graph):
 # mengembalikan nested array yang berisi
 # [[key matkul smt 1],[key matkul smt 2],[key matkul smt ..]]
 # topological sort terjadi di sini
-def pleaseWork(graph, key):
+def pleaseWork(graph, key): # versi tidak rekursif
     global acyclic
     graphnya = graph
     arrkey = key
     level = []
     perlevel = []
     
-    # selama arrkey belom kosong
+    # selama arrkey tidak kosong
     while len(arrkey)>1 and not acyclic:
+        # perlevel diisi dengan array of key yang simpulnya berderajat masuk 0
         perlevel = noIndegree(graphnya)
 
         # jika tidak ditemukan yang derajatnya 0 maka dia acyclic
@@ -92,6 +93,40 @@ def pleaseWork(graph, key):
             # memasukan array perlevel ke level (nested array)
             level.append(perlevel)
     return(level)
+
+def pleaseWork2(graphnya, key, level, perlevel): # versi rekursif
+    global acyclic
+    ''' BASIS '''
+    if(len(key)<=1 or acyclic): # ketika tidak acyclic atau graf sudah kosong
+        if(acyclic):
+            level = []
+        return level 
+
+    ''' REKURENS '''
+    if(len(key)>1):
+        # perlevel diisi dengan array of key yang simpulnya berderajat masuk 0
+        
+        #print("degree mula2:",format(graphnya.indegree))
+        perlevel = noIndegree(graphnya)
+        #print("perlevel :",format(perlevel))
+        
+        if(len(perlevel)<1):
+            acyclic = True
+        # kurangi derajat simpul yang bersisian
+        for lv in perlevel:
+            for u in graphnya.adjList[lv]:
+                graphnya.indegree[u] = graphnya.indegree[u] - 1
+
+            # menghapus nilai lv dari arrkey
+            key.remove(lv)
+        
+        #print("key :",format(key))
+        # memasukan array perlevel ke level (nested array)
+        level = level + [perlevel]
+        #print("level :",format(level))
+        
+        return pleaseWork2(graphnya, key, level, perlevel)
+
 
 
 # membaca file txt x dan membuat array of matkul y
@@ -118,6 +153,8 @@ def getKey(val, my_dict):
 def readToMakeEdges(filename, edge, map):
     filepath = filename
     with open(filepath) as fp:
+
+        # inisialisasi
         line = fp.readline()
         countcomma = 0
         pertama = 0
@@ -145,7 +182,7 @@ def readToMakeEdges(filename, edge, map):
             line = fp.readline()
 
 
-def printResult(graphnya, key, map):
+def printResult(graphnya, key, map): # print result untuk yang versi bukan rekursif
     hasil = pleaseWork(graphnya,key)
     jumlahsemester = len(hasil)
 
@@ -156,9 +193,24 @@ def printResult(graphnya, key, map):
             for j in range(len(hasil[i])-1):
                 print('{},'.format(map[hasil[i][j]]),end="")
             print('{}'.format(map[hasil[i][len(hasil[i])-1]]))
-    else: #array kosong
+    else: # array kosong (acyclic)
         print("     Tidak ada, graf yang terbentuk bukan DAG")
 
+def printResult2(graphnya, key, map): # print result untuk yang versi rekursif
+    level = []
+    perlevel = []
+    hasil = pleaseWork2(graphnya,key,level,perlevel)
+    jumlahsemester = len(hasil)
+
+    # jika array tidak kosong
+    if len(hasil)!=0:
+        for i in range(jumlahsemester):
+            print('     Semester {:<4s} : '.format(py_solution().int_to_Roman(i+1)),end="")
+            for j in range(len(hasil[i])-1):
+                print('{},'.format(map[hasil[i][j]]),end="")
+            print('{}'.format(map[hasil[i][len(hasil[i])-1]]))
+    else: # array kosong (acyclic)
+        print("     Tidak ada, graf yang terbentuk bukan DAG")
 
 # print ascii
 def printAC3():
@@ -183,4 +235,3 @@ def printAC3():
     print('\n'.join(l.center(width-1) for l in s.splitlines()))
     print("a n t i   c h a o s".center(width-1))
     print("c h a o s   c l u b".center(width-1))
-# ya sebenernya chaos juga sih
